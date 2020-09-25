@@ -1,6 +1,6 @@
-# Thanks to [harviacode.com](http://harviacode.com)#
+# Thanks to [harviacode.com](http://harviacode.com)
 
-# How to?
+# How to use this generator?
 
 1. Install composer with "composer install"
 1. Rename .env.example to .example
