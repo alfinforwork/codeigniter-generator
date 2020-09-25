@@ -2,7 +2,8 @@
 
 # How to?
 
+1. Install composer with "composer install"
 1. Rename .env.example to .example
-2. Configure your .env
-3. Access http://url/harviacode to access generator
-4. Enjoy !!!!!
+1. Configure your .env
+1. Access http://url/harviacode to access generator
+1. Enjoy !!!!!
