@@ -62,7 +62,8 @@ $string .="\n\n    public function index()
     
     public function json() {
         header('Content-Type: application/json');
-        echo \$this->" . $m . "->json();
+        //echo \$this->" . $m . "->json();
+        echo json_encode(\$this->" . $m . "->get_all());
     }";
 
 }
@@ -264,5 +265,3 @@ $string .= "\n\n}\n\n/* End of file $c_file */
 
 
 $hasil_controller = createFile($string, $target . "controllers/" . $c_file);
-
-?>

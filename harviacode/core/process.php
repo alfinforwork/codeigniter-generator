@@ -212,9 +212,9 @@ if (isset($_POST['generateapi'])) {
         // include 'core/create_view_read.php';
 
         $export_excel == 1 ? include 'core/create_exportexcel_helper.php' : '';
-        // $export_word == 1 ? include 'core/create_view_list_doc.php' : '';
+        $export_word == 1 ? include 'core/create_view_list_doc.php' : '';
         $export_pdf == 1 ? include 'core/create_pdf_library.php' : '';
-        // $export_pdf == 1 ? include 'core/create_view_list_pdf.php' : '';
+        $export_pdf == 1 ? include 'core/create_view_list_pdf.php' : '';
 
         $hasil[] = $hasil_controller;
         $hasil[] = $hasil_model;

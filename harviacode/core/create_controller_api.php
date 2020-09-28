@@ -24,7 +24,7 @@ $string .= "
 
 if ($jenis_tabel == 'reguler_table') {
 
-    $string .= "\n\n    public function index()
+    $string .= "\n\n    public function index_get()
     {
         \$q = urldecode(\$this->input->get('q', TRUE));
         \$start = intval(\$this->input->get('start'));
@@ -52,22 +52,22 @@ if ($jenis_tabel == 'reguler_table') {
             'total_rows' => \$config['total_rows'],
             'start' => \$start,
         );
-        \$this->response($data,200);
+        \$this->response(\$data,200);
     }";
 } else {
 
-    $string .= "\n\n    public function index()
+    $string .= "\n\n    public function index_get()
     {
         \$this->load->view('$c_url/$v_list');
     } 
     
-    public function json() {
+    public function json_get() {
         header('Content-Type: application/json');
         echo \$this->" . $m . "->json();
     }";
 }
 
-$string .= "\n\n    public function read(\$id) 
+$string .= "\n\n    public function read_get(\$id = null) 
     {
         \$row = \$this->" . $m . "->get_by_id(\$id);
         if (\$row) {
@@ -76,35 +76,27 @@ foreach ($all as $row) {
     $string .= "\n\t\t'" . $row['column_name'] . "' => \$row->" . $row['column_name'] . ",";
 }
 $string .= "\n\t    );
-            \$this->load->view('$c_url/$v_read', \$data);
+            \$this->response([
+                \$data,
+            ],400);
         } else {
             \$this->session->set_flashdata('message', 'Record Not Found');
             redirect(site_url('$c_url'));
         }
     }
-
-    public function create() 
-    {
-        \$data = array(
-            'button' => 'Create',
-            'action' => site_url('$c_url/create_action'),";
-foreach ($all as $row) {
-    $string .= "\n\t    '" . $row['column_name'] . "' => set_value('" . $row['column_name'] . "'),";
-}
-$string .= "\n\t);
-        \$this->load->view('$c_url/$v_form', \$data);
-    }
     
-    public function create_action() 
+    public function create_post()
     {
         \$this->_rules();
 
         if (\$this->form_validation->run() == FALSE) {
-            \$this->create();
+            \$this->response([
+                'message'=>validation_errors(),
+            ],400);
         } else {
             \$data = array(";
 foreach ($non_pk as $row) {
-    $string .= "\n\t\t'" . $row['column_name'] . "' => \$this->input->post('" . $row['column_name'] . "',TRUE),";
+    $string .= "\n\t\t'" . $row['column_name'] . "' => \$this->post('" . $row['column_name'] . "',TRUE),";
 }
 $string .= "\n\t    );
 
@@ -120,40 +112,31 @@ $string .= "\n\t    );
             }
         }
     }
-    
-    public function update(\$id) 
-    {
-        \$row = \$this->" . $m . "->get_by_id(\$id);
 
-        if (\$row) {
-            \$data = array(
-                'button' => 'Update',
-                'action' => site_url('$c_url/update_action'),";
-foreach ($all as $row) {
-    $string .= "\n\t\t'" . $row['column_name'] . "' => set_value('" . $row['column_name'] . "', \$row->" . $row['column_name'] . "),";
-}
-$string .= "\n\t    );
-            \$this->load->view('$c_url/$v_form', \$data);
-        } else {
-            \$this->session->set_flashdata('message', 'Record Not Found');
-            redirect(site_url('$c_url'));
-        }
-    }
     
-    public function update_action() 
-    {
+    public function update_put(\$id = null) 
+    {";
+
+foreach ($non_pk as $row) {
+    $string .= "\n\t\$data['" . $row['column_name'] . "'] = \$this->put('" . $row['column_name'] . "');";
+}
+$string .= "\n\n\t\$this->form_validation->set_data(\$data);
+
         \$this->_rules();
 
         if (\$this->form_validation->run() == FALSE) {
-            \$this->update(\$this->input->post('$pk', TRUE));
+            \$this->response([
+                'message'=>validation_errors(),
+            ],400);
         } else {
             \$data = array(";
 foreach ($non_pk as $row) {
-    $string .= "\n\t\t'" . $row['column_name'] . "' => \$this->input->post('" . $row['column_name'] . "',TRUE),";
+    $string .= "\n\t\t'" . $row['column_name'] . "' => \$this->put('" . $row['column_name'] . "',TRUE),";
 }
 $string .= "\n\t    );
 
-            \$cek = \$this->" . $m . "->update(\$this->input->post('$pk', TRUE), \$data);
+            // \$cek = \$this->" . $m . "->update(\$this->put('$pk', TRUE), \$data);
+            \$cek = \$this->" . $m . "->update(\$id, \$data);
             if(\$cek){
                 \$this->response([
                     'message'=>'Data berhasil diubah'
@@ -166,7 +149,7 @@ $string .= "\n\t    );
         }
     }
     
-    public function delete(\$id) 
+    public function delete_delete(\$id = null) 
     {
         \$row = \$this->" . $m . "->get_by_id(\$id);
 
@@ -182,18 +165,18 @@ $string .= "\n\t    );
         }
     }
 
-    public function _rules() 
+    function _rules() 
     {";
 foreach ($non_pk as $row) {
     $int = $row3['data_type'] == 'int' || $row['data_type'] == 'double' || $row['data_type'] == 'decimal' ? '|numeric' : '';
     $string .= "\n\t\$this->form_validation->set_rules('" . $row['column_name'] . "', '" .  strtolower(label($row['column_name'])) . "', 'trim|required$int');";
 }
-$string .= "\n\n\t\$this->form_validation->set_rules('$pk', '$pk', 'trim');";
+$string .= "\n\n\t//\$this->form_validation->set_rules('$pk', '$pk', 'trim');";
 $string .= "\n\t\$this->form_validation->set_error_delimiters('<span class=\"text-danger\">', '</span>');
     }";
 
 if ($export_excel == '1') {
-    $string .= "\n\n    public function excel()
+    $string .= "\n\n    public function excel_get()
     {
         \$this->load->helper('exportexcel');
         \$namaFile = \"$table_name.xls\";
@@ -239,7 +222,7 @@ if ($export_excel == '1') {
 }
 
 if ($export_word == '1') {
-    $string .= "\n\n    public function word()
+    $string .= "\n\n    public function word_get()
     {
         header(\"Content-type: application/vnd.ms-word\");
         header(\"Content-Disposition: attachment;Filename=$table_name.doc\");
@@ -254,7 +237,7 @@ if ($export_word == '1') {
 }
 
 if ($export_pdf == '1') {
-    $string .= "\n\n    function pdf()
+    $string .= "\n\n    function pdf_get()
     {
         \$data = array(
             '" . $table_name . "_data' => \$this->" . $m . "->get_all(),

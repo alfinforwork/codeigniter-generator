@@ -116,6 +116,7 @@ require_once 'core/process.php';
                 </div>
                 <input type="submit" value="Generate" name="generate" class="btn btn-primary" onclick="javascript: return confirm('This will overwrite the existing files. Continue ?')" />
                 <input type="submit" value="Generate All" name="generateall" class="btn btn-danger" onclick="javascript: return confirm('WARNING !! This will generate code for ALL TABLE and overwrite the existing files\\nPlease double check before continue. Continue ?')" />
+                <input type="submit" value="Generate Api" name="generateapi" class="btn btn-primary" onclick="javascript: return confirm('This will overwrite the existing files. Continue ?')" />
                 <a href="core/setting.php" class="btn btn-default">Setting</a>
             </form>
             <br>
