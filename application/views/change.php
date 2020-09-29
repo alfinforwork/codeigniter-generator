@@ -99,13 +99,9 @@
         <h1>Welcome to CodeIgniter Generator!</h1>
 
         <div id="body">
-            <h1 style="margin-bottom: 50px;">Pilih Fitur</h1>
             <div class="row">
                 <div style="flex: 1;">
-                    <a href="harviacode?type=1" target="_blank">Fullstack</a>
-                </div>
-                <div style="flex: 1;">
-                    <a href="harviacode?type=2" target="_blank">Rest API</a>
+                    <a href="harviacode" target="_blank">Click here to generate</a>
                 </div>
             </div>
         </div>
